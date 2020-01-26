@@ -22,7 +22,8 @@ namespace Minesweeper
             this.Text = "Minesweeper";
             this.Size = new Size(1000, 1000);
 
-            _game = new Game();
+            var gameLoader = new LoadGameFromFile();
+            _game = gameLoader.Load("InitialGame.txt").GetAwaiter().GetResult();
             _gameDrawer = new GameDrawer(_game);
             this.Paint += Form1_Paint;
         }
