@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Minesweeper
 {
@@ -6,6 +7,7 @@ namespace Minesweeper
     {
         private const int CellSize = 50;
         private Font _symbolFont = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        private Font _infoFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         private Game _game;
 
         public GameDrawer(Game game)
@@ -33,18 +35,32 @@ namespace Minesweeper
             {
                 for (int row = 0; row < _game.NumberOfRows; row++)
                 {
-                    DrawSymbol(g, _game.CellContents(column, row), column, row);
+                    DrawSymbol(g, _game.CellContents(column, row), column, row, Brushes.Black);
                 }
             }
         }
 
-        private void DrawSymbol(Graphics g, string symbol, int column, int row)
+        internal void DrawMove(Graphics g, Solution result)
+        {
+
+            DrawSymbol(g, _game.CellContents(result.CellOfInterest.Column, result.CellOfInterest.Row), result.CellOfInterest.Column, result.CellOfInterest.Row, Brushes.Red);
+
+            foreach (var cell in result.SolvedCells)
+            {
+                DrawSymbol(g, _game.CellContents(cell.Column, cell.Row), cell.Column, cell.Row, Brushes.Blue);
+            }
+
+            g.DrawString(result.Description, _infoFont, Brushes.Black, (_game.NumberOfColumns + 1) * CellSize, (result.CellOfInterest.Row * CellSize) + 20);
+
+        }
+
+        private void DrawSymbol(Graphics g, string symbol, int column, int row, Brush brush)
         {
             var x = column * CellSize;
             var y = row * CellSize;
 
             var symbolSize = g.MeasureString(symbol, _symbolFont, new Point(x, y), StringFormat.GenericDefault);
-            g.DrawString(symbol, _symbolFont, Brushes.Black, x + ((CellSize - symbolSize.Width) / 2), y + ((CellSize - symbolSize.Height) / 2));
+            g.DrawString(symbol, _symbolFont, brush, x + ((CellSize - symbolSize.Width) / 2), y + ((CellSize - symbolSize.Height) / 2));
         }
     }
 }

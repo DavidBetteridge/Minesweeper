@@ -22,10 +22,27 @@ namespace Minesweeper
             this.Text = "Minesweeper";
             this.Size = new Size(1000, 1000);
 
+            var solveButton = new Button
+            {
+                Text = "Solve",
+            };
+
+            solveButton.Click += SolveButton_Click;
+            this.Controls.Add(solveButton);
+
             var gameLoader = new LoadGameFromFile();
             _game = gameLoader.Load("InitialGame.txt").GetAwaiter().GetResult();
             _gameDrawer = new GameDrawer(_game);
             this.Paint += Form1_Paint;
+        }
+
+        private void SolveButton_Click(object sender, EventArgs e)
+        {
+            using var g = this.CreateGraphics();
+            g.Clear(this.BackColor);
+            _gameDrawer.Draw(g);
+            var result = _game.Solve();
+            _gameDrawer.DrawMove(g, result);
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
