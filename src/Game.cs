@@ -49,7 +49,7 @@ namespace Minesweeper
             {
                 for (int row = 0; row < NumberOfRows; row++)
                 {
-                    if (TryDoesCellContainsMineCount(column, row, out var mineCount))
+                    if (TryGetMineCountForCell(column, row, out var mineCount))
                     {
                         var neighboursWithMines = NeighboursWithMines(column, row);
                         var neighboursWhichAreUnknown = NeighboursWhichAreUnknown(column, row);
@@ -112,7 +112,7 @@ namespace Minesweeper
             return neighbours;
         }
 
-        private bool TryDoesCellContainsMineCount(int column, int row, out int mineCount)
+        private bool TryGetMineCountForCell(int column, int row, out int mineCount)
         {
             if (cells[column, row] >= 0)
             {

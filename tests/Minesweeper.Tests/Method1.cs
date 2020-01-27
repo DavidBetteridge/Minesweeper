@@ -9,14 +9,7 @@ namespace Minesweeper.Tests
         [Fact]
         public void SolveFirstCell()
         {
-            var initialState = new int?[8, 2];
-            initialState[0, 0] = 0;
-            initialState[4, 0] = 1;
-            initialState[6, 0] = 1;
-            initialState[7, 0] = 1;
-            initialState[5, 1] = 3;
-
-            var game = new Game(initialState);
+            var game = CreateGame();
             var actualSolution = game.Solve();
 
             Assert.Equal("No mines left to place.", actualSolution.Description);
@@ -28,9 +21,103 @@ namespace Minesweeper.Tests
             Assert.Contains(actualSolution.SolvedCells, c => c.Column == 1 && c.Row == 0);
             Assert.Contains(actualSolution.SolvedCells, c => c.Column == 1 && c.Row == 1);
 
-            Assert.Equal("x", game.CellContents(0, 1));
-            Assert.Equal("x", game.CellContents(1, 0));
-            Assert.Equal("x", game.CellContents(1, 1));
+            var expectedBoard = "0x  1 11," +
+                                "xx 3    ," +
+                                "13 5 4  ," +
+                                " 2   31 ," +
+                                "  332  0," +
+                                "     1  ," +
+                                " 1 0 1  ," +
+                                "        ";
+            AssertBoard(expectedBoard, game);
+        }
+
+
+        [Fact]
+        public void SolveSecondCell()
+        {
+            var game = CreateGame();
+
+            game.Solve();
+            var actualSolution = game.Solve();
+
+            Assert.Equal("No mines left to place.", actualSolution.Description);
+            Assert.Equal(3, actualSolution.CellOfInterest.Column);
+            Assert.Equal(6, actualSolution.CellOfInterest.Row);
+
+            Assert.Equal(8, actualSolution.SolvedCells.Length);
+            Assert.Contains(actualSolution.SolvedCells, c => c.Column == 2 && c.Row == 5);
+            Assert.Contains(actualSolution.SolvedCells, c => c.Column == 3 && c.Row == 5);
+            Assert.Contains(actualSolution.SolvedCells, c => c.Column == 4 && c.Row == 5);
+            Assert.Contains(actualSolution.SolvedCells, c => c.Column == 2 && c.Row == 6);
+            Assert.Contains(actualSolution.SolvedCells, c => c.Column == 4 && c.Row == 6);
+            Assert.Contains(actualSolution.SolvedCells, c => c.Column == 2 && c.Row == 7);
+            Assert.Contains(actualSolution.SolvedCells, c => c.Column == 3 && c.Row == 7);
+            Assert.Contains(actualSolution.SolvedCells, c => c.Column == 4 && c.Row == 7);
+
+            var expectedBoard = "0x  1 11," +
+                                "xx 3    ," +
+                                "13 5 4  ," +
+                                " 2   31 ," +
+                                "  332  0," +
+                                "  xxx1  ," +
+                                " 1x0x1  ," +
+                                "  xxx   ";
+            AssertBoard(expectedBoard, game);
+        }
+
+
+        private void AssertBoard(string expectedBoard, Game actualGame)
+        {
+            var lines = expectedBoard.Split(',');
+            var numberOfColumns = lines[0].Length;
+            var numberOfRows = lines.Length;
+
+
+            for (int column = 0; column < numberOfColumns; column++)
+            {
+                for (int row = 0; row < numberOfRows; row++)
+                {
+                    var expectedCell = lines[row][column].ToString();
+                    var actualCell = actualGame.CellContents(column, row);
+                    if (actualCell == "") actualCell = " ";
+
+                    Assert.Equal(expectedCell, actualCell);
+                }
+            }
+        }
+
+        private Game CreateGame()
+        {
+            var details = "0   1 11," +
+                          "   3    ," +
+                          "13 5 4  ," +
+                          " 2   31 ," +
+                          "  332  0," +
+                          "     1  ," +
+                          " 1 0 1  ," +
+                          "        ";
+
+            var lines = details.Split(',');
+            var numberOfColumns = lines[0].Length;
+            var numberOfRows = lines.Length;
+
+            var initialState = new int?[numberOfColumns, numberOfRows];
+
+            for (int column = 0; column < numberOfColumns; column++)
+            {
+                for (int row = 0; row < numberOfRows; row++)
+                {
+                    var cell = lines[row][column];
+                    if (cell != ' ')
+                    {
+                        initialState[column, row] = int.Parse(cell.ToString());
+                    }
+                }
+            }
+
+            return new Game(initialState);
+
         }
     }
 }
