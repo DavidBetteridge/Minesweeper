@@ -15,7 +15,7 @@ namespace Minesweeper
 
         private int[,] cells;
 
-        public Game(int?[,] initialState)
+        public Game(char[,] initialState)
         {
             NumberOfColumns = initialState.GetUpperBound(0) + 1;
             NumberOfRows = initialState.GetUpperBound(1) + 1;
@@ -26,7 +26,22 @@ namespace Minesweeper
             {
                 for (int row = 0; row < NumberOfRows; row++)
                 {
-                    cells[column, row] = initialState[column, row] ?? UnknownCell;
+                    cells[column, row] = initialState[column, row] switch
+                    {
+                        '!' => Mine,
+                        'x' => Empty,
+                        ' ' => UnknownCell,
+                        '0' => 0,
+                        '1' => 1,
+                        '2' => 2,
+                        '3' => 3,
+                        '4' => 4,
+                        '5' => 5,
+                        '6' => 6,
+                        '7' => 7,
+                        '8' => 8,
+                        _ => throw new Exception($"Cell {column},{row} contains {initialState[column, row]} which isn't valid."),
+                    };
                 }
             }
 
@@ -44,6 +59,16 @@ namespace Minesweeper
         }
 
         public Solution Solve()
+        {
+            var solution = Method1();
+
+            if (solution is null)
+                solution = Method2();
+
+            return solution;
+        }
+
+        private Solution Method1()
         {
             for (int column = 0; column < NumberOfColumns; column++)
             {
@@ -76,13 +101,47 @@ namespace Minesweeper
             return null;
         }
 
-        private CellLocation[] NeighboursWithMines(int column, int row)
+
+        private Solution Method2()
+        {
+            for (int column = 0; column < NumberOfColumns; column++)
+            {
+                for (int row = 0; row < NumberOfRows; row++)
+                {
+                    if (TryGetMineCountForCell(column, row, out var mineCount))
+                    {
+                        var neighboursWithMines = NeighboursWithMines(column, row);
+                        var neighboursWhichAreUnknown = NeighboursWhichAreUnknown(column, row);
+                        var minesLeftToPlace = mineCount - (neighboursWithMines.Count());
+
+                        if (minesLeftToPlace > 0 && minesLeftToPlace == neighboursWhichAreUnknown.Count())
+                        {
+                            foreach (var cell in neighboursWhichAreUnknown)
+                            {
+                                cells[cell.Column, cell.Row] = Mine;
+                            }
+
+                            return new Solution
+                            {
+                                CellOfInterest = new CellLocation(column, row),
+                                SolvedCells = neighboursWhichAreUnknown,
+                                Description = "All unknown cells must contain mines.",
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        internal CellLocation[] NeighboursWithMines(int column, int row)
         {
             var neighbours = GetNeighbours(column, row);
             return neighbours.Where(cell => cells[cell.Column, cell.Row] == Mine).ToArray();
         }
 
-        private CellLocation[] NeighboursWhichAreUnknown(int column, int row)
+        internal CellLocation[] NeighboursWhichAreUnknown(int column, int row)
         {
             var neighbours = GetNeighbours(column, row);
             return neighbours.Where(cell => cells[cell.Column, cell.Row] == UnknownCell).ToArray();
@@ -112,7 +171,7 @@ namespace Minesweeper
             return neighbours;
         }
 
-        private bool TryGetMineCountForCell(int column, int row, out int mineCount)
+        internal bool TryGetMineCountForCell(int column, int row, out int mineCount)
         {
             if (cells[column, row] >= 0)
             {

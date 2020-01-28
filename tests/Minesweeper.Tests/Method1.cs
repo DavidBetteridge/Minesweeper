@@ -102,17 +102,13 @@ namespace Minesweeper.Tests
             var numberOfColumns = lines[0].Length;
             var numberOfRows = lines.Length;
 
-            var initialState = new int?[numberOfColumns, numberOfRows];
+            var initialState = new char[numberOfColumns, numberOfRows];
 
             for (int column = 0; column < numberOfColumns; column++)
             {
                 for (int row = 0; row < numberOfRows; row++)
                 {
-                    var cell = lines[row][column];
-                    if (cell != ' ')
-                    {
-                        initialState[column, row] = int.Parse(cell.ToString());
-                    }
+                    initialState[column, row] = lines[row][column];
                 }
             }
 
