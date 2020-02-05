@@ -46,7 +46,7 @@ namespace Minesweeper
 
             if (result is null)
             {
-                MessageBox.Show("No solution found");
+                MessageBox.Show("No more solutions found");
             }
             else
             {

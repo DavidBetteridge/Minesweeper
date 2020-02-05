@@ -1,13 +1,13 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Minesweeper
 {
     class GameDrawer
     {
         private const int CellSize = 50;
-        private Font _symbolFont = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        private Font _infoFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        private readonly Font _symbolFont = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        private readonly Font _infoFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        private readonly Pen _borderPen = new Pen(Brushes.Black, 3);
         private Game _game;
 
         public GameDrawer(Game game)
@@ -19,8 +19,7 @@ namespace Minesweeper
         {
             g.TranslateTransform(100, 100);
 
-            var borderPen = new Pen(Brushes.Black, 3);
-            g.DrawRectangle(borderPen, 0, 0, _game.NumberOfColumns * CellSize, _game.NumberOfRows * CellSize);
+            g.DrawRectangle(_borderPen, 0, 0, _game.NumberOfColumns * CellSize, _game.NumberOfRows * CellSize);
 
             for (int column = 1; column < _game.NumberOfColumns; column++)
             {
@@ -44,11 +43,11 @@ namespace Minesweeper
         internal void DrawMove(Graphics g, Solution result)
         {
 
-            DrawSymbol(g, _game.CellContents(result.CellOfInterest.Column, result.CellOfInterest.Row), result.CellOfInterest.Column, result.CellOfInterest.Row, Brushes.Red);
+            DrawSymbol(g, _game.CellContents(result.CellOfInterest.Column, result.CellOfInterest.Row), result.CellOfInterest.Column, result.CellOfInterest.Row, Brushes.Blue);
 
             foreach (var cell in result.SolvedCells)
             {
-                DrawSymbol(g, _game.CellContents(cell.Column, cell.Row), cell.Column, cell.Row, Brushes.Blue);
+                DrawSymbol(g, _game.CellContents(cell.Column, cell.Row), cell.Column, cell.Row, Brushes.Red);
             }
 
             g.DrawString(result.Description, _infoFont, Brushes.Black, (_game.NumberOfColumns + 1) * CellSize, (result.CellOfInterest.Row * CellSize) + 20);
@@ -61,11 +60,13 @@ namespace Minesweeper
             var y = row * CellSize;
 
             if (symbol == "x")
-                symbol = "-";
-
-                if (symbol == "!")
             {
-                g.FillEllipse(brush, x + (CellSize / 4), y + (CellSize / 4), 25, 25);
+                symbol = "-";
+            }
+
+            if (symbol == "!")
+            {
+                g.FillEllipse(brush, x + (CellSize / 4), y + (CellSize / 4), CellSize / 2, CellSize / 2);
             }
             else
             {
