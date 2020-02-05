@@ -60,21 +60,21 @@ namespace Minesweeper
 
         public Solution Solve()
         {
-            var solution = Method1();
+            var solution = Method1_NoMinesLeftToPlace();
 
             if (solution is null)
-                solution = Method2();
+                solution = Method2_UnknownCellsMustBeMines();
 
             if (solution is null)
-                solution = Method3();
+                solution = Method3_MustContainAMine();
 
             if (solution is null)
-                solution = Method4();
+                solution = Method4_CannotContainAMine();
 
             return solution;
         }
 
-        private Solution Method3()
+        private Solution Method3_MustContainAMine()
         {
             var validator = new GameValidator();
             for (int column = 0; column < NumberOfColumns; column++)
@@ -88,10 +88,10 @@ namespace Minesweeper
                         var solution = default(Solution);
                         do
                         {
-                            solution = Method1();
+                            solution = Method1_NoMinesLeftToPlace();
                             if (solution is null)
                             {
-                                solution = Method2();
+                                solution = Method2_UnknownCellsMustBeMines();
                             }
 
                             if (solution is object)
@@ -131,7 +131,7 @@ namespace Minesweeper
             return null;
         }
 
-        private Solution Method4()
+        private Solution Method4_CannotContainAMine()
         {
             var validator = new GameValidator();
             for (int column = 0; column < NumberOfColumns; column++)
@@ -145,10 +145,10 @@ namespace Minesweeper
                         var solution = default(Solution);
                         do
                         {
-                            solution = Method1();
+                            solution = Method1_NoMinesLeftToPlace();
                             if (solution is null)
                             {
-                                solution = Method2();
+                                solution = Method2_UnknownCellsMustBeMines();
                             }
 
                             if (solution is object)
@@ -188,7 +188,7 @@ namespace Minesweeper
             return null;
         }
 
-        private Solution Method1()
+        private Solution Method1_NoMinesLeftToPlace()
         {
             for (int column = 0; column < NumberOfColumns; column++)
             {
@@ -222,7 +222,7 @@ namespace Minesweeper
         }
 
 
-        private Solution Method2()
+        private Solution Method2_UnknownCellsMustBeMines()
         {
             for (int column = 0; column < NumberOfColumns; column++)
             {
