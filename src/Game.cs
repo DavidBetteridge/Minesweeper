@@ -65,7 +65,127 @@ namespace Minesweeper
             if (solution is null)
                 solution = Method2();
 
+            if (solution is null)
+                solution = Method3();
+
+            if (solution is null)
+                solution = Method4();
+
             return solution;
+        }
+
+        private Solution Method3()
+        {
+            var validator = new GameValidator();
+            for (int column = 0; column < NumberOfColumns; column++)
+            {
+                for (int row = 0; row < NumberOfRows; row++)
+                {
+                    if (cells[column, row] == UnknownCell)
+                    {
+                        cells[column, row] = Empty;
+                        var movesToUnDo = new List<CellLocation>();
+                        var solution = default(Solution);
+                        do
+                        {
+                            solution = Method1();
+                            if (solution is null)
+                            {
+                                solution = Method2();
+                            }
+
+                            if (solution is object)
+                            {
+                                movesToUnDo.AddRange(solution.SolvedCells);
+
+                                var validationResult = validator.Validate(this);
+                                if (!validationResult.IsValid)
+                                {
+                                    cells[column, row] = Mine;
+
+                                    foreach (var moveToUndo in movesToUnDo)
+                                    {
+                                        cells[moveToUndo.Column, moveToUndo.Row] = UnknownCell;
+                                    }
+
+                                    return new Solution
+                                    {
+                                        CellOfInterest = validationResult.CellOfInterest,
+                                        SolvedCells = new CellLocation[1] { new CellLocation(column, row) },
+                                        Description = "Must contain a mine",
+                                    };
+                                }
+                            }
+                        } while (solution is object);
+
+                        foreach (var moveToUndo in movesToUnDo)
+                        {
+                            cells[moveToUndo.Column, moveToUndo.Row] = UnknownCell;
+                        }
+
+                        cells[column, row] = UnknownCell;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private Solution Method4()
+        {
+            var validator = new GameValidator();
+            for (int column = 0; column < NumberOfColumns; column++)
+            {
+                for (int row = 0; row < NumberOfRows; row++)
+                {
+                    if (cells[column, row] == UnknownCell)
+                    {
+                        cells[column, row] = Mine;
+                        var movesToUnDo = new List<CellLocation>();
+                        var solution = default(Solution);
+                        do
+                        {
+                            solution = Method1();
+                            if (solution is null)
+                            {
+                                solution = Method2();
+                            }
+
+                            if (solution is object)
+                            {
+                                movesToUnDo.AddRange(solution.SolvedCells);
+
+                                var validationResult = validator.Validate(this);
+                                if (!validationResult.IsValid)
+                                {
+                                    cells[column, row] = Empty;
+
+                                    foreach (var moveToUndo in movesToUnDo)
+                                    {
+                                        cells[moveToUndo.Column, moveToUndo.Row] = UnknownCell;
+                                    }
+
+                                    return new Solution
+                                    {
+                                        CellOfInterest = validationResult.CellOfInterest,
+                                        SolvedCells = new CellLocation[1] { new CellLocation(column, row) },
+                                        Description = "Cannot contain a mine",
+                                    };
+                                }
+                            }
+                        } while (solution is object);
+
+                        foreach (var moveToUndo in movesToUnDo)
+                        {
+                            cells[moveToUndo.Column, moveToUndo.Row] = UnknownCell;
+                        }
+
+                        cells[column, row] = UnknownCell;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private Solution Method1()

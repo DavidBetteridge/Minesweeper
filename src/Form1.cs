@@ -42,7 +42,15 @@ namespace Minesweeper
             g.Clear(this.BackColor);
             _gameDrawer.Draw(g);
             var result = _game.Solve();
-            _gameDrawer.DrawMove(g, result);
+
+            if (result is null)
+            {
+                MessageBox.Show("No solution found");
+            }
+            else
+            {
+                _gameDrawer.DrawMove(g, result);
+            }
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
