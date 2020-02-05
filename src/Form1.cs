@@ -21,6 +21,7 @@ namespace Minesweeper
 
             this.Text = "Minesweeper";
             this.Size = new Size(1000, 1000);
+            this.BackColor = Color.White;
 
             var solveButton = new Button
             {

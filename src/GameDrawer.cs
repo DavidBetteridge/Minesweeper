@@ -19,7 +19,8 @@ namespace Minesweeper
         {
             g.TranslateTransform(100, 100);
 
-            g.DrawRectangle(Pens.Black, 0, 0, _game.NumberOfColumns * CellSize, _game.NumberOfRows * CellSize);
+            var borderPen = new Pen(Brushes.Black, 3);
+            g.DrawRectangle(borderPen, 0, 0, _game.NumberOfColumns * CellSize, _game.NumberOfRows * CellSize);
 
             for (int column = 1; column < _game.NumberOfColumns; column++)
             {
@@ -59,8 +60,18 @@ namespace Minesweeper
             var x = column * CellSize;
             var y = row * CellSize;
 
-            var symbolSize = g.MeasureString(symbol, _symbolFont, new Point(x, y), StringFormat.GenericDefault);
-            g.DrawString(symbol, _symbolFont, brush, x + ((CellSize - symbolSize.Width) / 2), y + ((CellSize - symbolSize.Height) / 2));
+            if (symbol == "x")
+                symbol = "-";
+
+                if (symbol == "!")
+            {
+                g.FillEllipse(brush, x + (CellSize / 4), y + (CellSize / 4), 25, 25);
+            }
+            else
+            {
+                var symbolSize = g.MeasureString(symbol, _symbolFont, new Point(x, y), StringFormat.GenericDefault);
+                g.DrawString(symbol, _symbolFont, brush, x + ((CellSize - symbolSize.Width) / 2), y + ((CellSize - symbolSize.Height) / 2));
+            }
         }
     }
 }

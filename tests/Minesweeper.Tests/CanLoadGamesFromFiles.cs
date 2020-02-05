@@ -9,7 +9,7 @@ namespace Minesweeper.Tests
         public async Task CheckFilesCanBeLoaded()
         {
             var gameLoader = new LoadGameFromFile();
-            var game = await gameLoader.Load("InitialGame.txt");
+            var game = await gameLoader.Load("SimpleGame.txt");
 
             Assert.Equal(8, game.NumberOfColumns);
             Assert.Equal(8, game.NumberOfRows);
